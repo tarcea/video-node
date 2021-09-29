@@ -8,7 +8,7 @@ const server = http.Server(app);
 const io = require('socket.io')(server);
 
 app.set('view engine', 'ejs');
-app.set(express.static('public'));
+app.use(express.static('public'));
 
 app.get('/', (req, res) => {
   res.redirect(`/${uuidV4()}`)
@@ -20,7 +20,8 @@ app.get('/:room', (req, res) => {
 
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
-    console.log(roomId, userId);
+    socket.join(roomId);
+    socket.broadcast.to(roomId).emit('user-connected', userId)
   })
 });
 
